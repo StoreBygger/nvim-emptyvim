@@ -29,6 +29,7 @@ Eksterne plugins en trenger å innstallere: ( ikke komplett )
   - julia
   - alle pakker nødvendig for innstallerte språk
   - wget
+  - tree-sitter
   - "sudo luarocks install luacheck"
     - + jsregexp
   - "sudo npm install -g neovim"
