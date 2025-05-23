@@ -21,10 +21,10 @@ Eksterne plugins en trenger å innstallere: ( ikke komplett )
   - nodejs
   - npm
   - lazygit
-  - fd-find
+  - fd-find ( kan og prøve bare fd)
   - composer
   - php
-  - javac
+  - javac ( kan og prøve bare "jdk-openjdk"
   - julia
   - alle pakker nødvendig for innstallerte språk
   - "sudo luarocks install luacheck"
