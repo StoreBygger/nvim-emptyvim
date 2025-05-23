@@ -7,6 +7,7 @@ Innstallasjon:
 ``` bash
 git clone https://github.com/StoreBygger/nvim-emptyvim
 mv nvim-emptyvim/* ~/.config/nvim
+mdkir -p ~/.config/nvim/sessions
 ```
 for å innstallere nye språk må disse tingene legges til:
   Fil nvim/lua/plugins/lsp.lua
