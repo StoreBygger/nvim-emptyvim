@@ -28,6 +28,7 @@ Eksterne plugins en trenger å innstallere: ( ikke komplett )
   - javac ( kan og prøve bare "jdk-openjdk"
   - julia
   - alle pakker nødvendig for innstallerte språk
+  - wget
   - "sudo luarocks install luacheck"
     - + jsregexp
   - "sudo npm install -g neovim"
