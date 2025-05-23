@@ -1,0 +1,29 @@
+
+
+for å innstallere nye språk må disse tingene legges til:
+  Fil nvim/lua/plugins/lsp.lua
+    - legg til language server i ensure_installed
+    - Legg til på bunnen: 
+    " require("lspconfig")["<languageserver>"].setup {
+        capabilities = capabilities
+      }"
+    - Legg til kommando for å kjøre språket ved tastetrykk <F5> i ui.lua, toggleterm
+
+Eksterne plugins en trenger å innstallere: ( ikke komplett )
+  - nodejs
+  - npm
+  - lazygit
+  - fd-find
+  - composer
+  - php
+  - javac
+  - julia
+  - alle pakker nødvendig for innstallerte språk
+  - "sudo luarocks install luacheck"
+    - + jsregexp
+  - "sudo npm install -g neovim"
+    - eslint
+    - shellcheck
+  - pip install flake8 --break-system-packages
+  - npm install -g stylelint stylelint-config-standard
+
