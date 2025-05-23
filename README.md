@@ -4,8 +4,6 @@ Innstallasjon:
   - Se pakker under hva du må innstallere, 
     - Gi beskjed om du må innstallere en pakke som ikke er oppgitt nedenfor. 
 
-  - "git clone https://github.com/StoreBygger/nvim-emptyvim"
-  - "mv nvim-emptyvim/* ~/.config/nvim"
 ``` bash
 git clone https://github.com/StoreBygger/nvim-emptyvim
 mv nvim-emptyvim/* ~/.config/nvim
