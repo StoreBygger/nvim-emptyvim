@@ -25,6 +25,13 @@ vim.cmd.colorscheme("onedark")
 
 -- config zathura to nvim
 vim.g.vimtex_view_method = "zathura"
+vim.g.vimtex_compiler_method = "latexmk"
+vim.g.vimtex_compiler_progname = 'nvr'
+vim.g.vimtex_compiler_latexmk = {
+  continuous = 1,
+  callback = 1, 
+  options = {'-pdf', '-interaction=nonstopmode', '-synctex=1'}
+}
 
 --Telescope keymaps
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>", { desc = " Telescope Find Files" })

@@ -5,7 +5,7 @@ return {
     lazy = false,
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = { "lua", "python", "c", "bash", "javascript", "toml", "css", "html", "json" },
+        ensure_installed = { "lua", "python", "c", "bash", "javascript", "toml", "css", "html", "json", "latex", "bibtex"},
         sync_install = false,
         auto_install = true,
         ignore_install = {},
