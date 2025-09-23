@@ -23,6 +23,9 @@ vim.g.loaded_netrwPlugins = 1
 require("config.lazy")
 vim.cmd.colorscheme("onedark")
 
+-- config zathura to nvim
+vim.g.vimtex_view_method = "zathura"
+
 --Telescope keymaps
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>", { desc = " Telescope Find Files" })
 vim.keymap.set("n", "<leader>lg", ":Telescope live_grep<CR>", { desc = " Telescope Live Grep" })
