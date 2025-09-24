@@ -1,6 +1,6 @@
 vim.opt.clipboard = "unnamedplus" -- use system keyboard for yank
-vim.opt.nu = true -- set line numbers -- line numbers
-vim.opt.relativenumber = true -- use relative line numbers
+vim.opt.nu = true                 -- set line numbers -- line numbers
+vim.opt.relativenumber = true     -- use relative line numbers
 -- set tab size to 2 spaces
 vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
@@ -26,11 +26,11 @@ vim.cmd.colorscheme("onedark")
 -- config zathura to nvim
 vim.g.vimtex_view_method = "zathura"
 vim.g.vimtex_compiler_method = "latexmk"
-vim.g.vimtex_compiler_progname = 'nvr'
+vim.g.vimtex_compiler_progname = "nvr"
 vim.g.vimtex_compiler_latexmk = {
   continuous = 1,
-  callback = 1, 
-  options = {'-pdf', '-interaction=nonstopmode', '-synctex=1'}
+  callback = 1,
+  options = { "-pdf", "-interaction=nonstopmode", "-synctex=1" },
 }
 
 --Telescope keymaps
@@ -75,10 +75,10 @@ vim.keymap.set("n", "<leader>sll", ":SessionManager load_last_session<CR>", { de
 vim.keymap.set("n", "<leader>sls", ":SessionManager load_session<CR>", { desc = "Session Load Session" })
 vim.keymap.set("n", "<leader>slg", ":SessionManager load_git_session<CR>", { desc = "Session Load Git Session" })
 vim.keymap.set(
-	"n",
-	"<leader>slc",
-	":SessionManager load_current_dir_session<CR>",
-	{ desc = "Session Load CWD Session" }
+  "n",
+  "<leader>slc",
+  ":SessionManager load_current_dir_session<CR>",
+  { desc = "Session Load CWD Session" }
 )
 vim.keymap.set("n", "<leader>sd", ":SessionManager delete_session<CR>", { desc = "Session Delete" })
 
