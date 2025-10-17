@@ -62,7 +62,7 @@ return {
     "p00f/clangd_extensions.nvim",
     dependencies = { "neovim/nvim-lspconfig" },
     ft = { "c", "cpp", "objc", "objcpp" }, -- lazy-load på C/C++
-    opts = {},                           -- eller config = true
+    opts = {},                             -- eller config = true
     config = function()
       require("clangd_extensions").setup({
         ast = {
@@ -264,114 +264,218 @@ return {
     end,
   },
 
-  -- Selve LSP-oppsettet
   {
     "neovim/nvim-lspconfig",
     lazy = false,
-    opts = {
-      servers = {
-        -- Ensure mason installs the server
-        clangd = {
-          keys = {
-            { "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
-          },
-          root_markers = {
-            "compile_commands.json",
-            "compile_flags.txt",
-            "configure.ac", -- AutoTools
-            "Makefile",
-            "configure.ac",
-            "configure.in",
-            "config.h.in",
-            "meson.build",
-            "meson_options.txt",
-            "build.ninja",
-            ".git",
-          },
-          capabilities = {
-            offsetEncoding = { "utf-16" },
-          },
-          cmd = {
-            "clangd",
-            "--background-index",
-            "--clang-tidy",
-            "--header-insertion=iwyu",
-            "--completion-style=detailed",
-            "--function-arg-placeholders",
-            "--fallback-style=llvm",
-          },
-          init_options = {
-            usePlaceholders = true,
-            completeUnimported = true,
-            clangdFileStatus = true,
-          },
-        },
-      },
-      setup = {
-        clangd = function(_, opts)
-          local clangd_ext_opts = LazyVim.opts("clangd_extensions.nvim")
-          require("clangd_extensions").setup(
-            vim.tbl_deep_extend("force", clangd_ext_opts or {}, { server = opts })
-          )
-          return false
-        end,
-      },
-    },
     config = function()
-      local lspconfig = require("lspconfig")
-      local capabilities = require("cmp_nvim_lsp").default_capabilities()
+      -- Felles capabilities (cmp)
+      local caps = require("cmp_nvim_lsp").default_capabilities()
 
-      -- Bruker ts_ls i stedet for tsserver
-      lspconfig.ts_ls.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-          -- tilpasset kode for ts_ls-serveren
-        end,
-        settings = {
-          -- spesifikke innstillinger for ts_ls (TypeScript)
+      -- CLANGD: egen capabilities (utf-16) + root_dir via vim.fs
+      local clangd_caps = vim.deepcopy(caps)
+      clangd_caps.offsetEncoding = { "utf-16" }
+
+      local function root_dir_from(fname)
+        local markers = {
+          "compile_commands.json",
+          "compile_flags.txt",
+          "configure.ac",
+          "configure.in",
+          "config.h.in",
+          "meson.build",
+          "meson_options.txt",
+          "build.ninja",
+          "Makefile",
+          ".git",
+        }
+        local found = vim.fs.find(markers, { upward = true, path = fname })[1]
+        return found and vim.fs.dirname(found) or vim.loop.cwd()
+      end
+
+      -- ---- Definer konfiger ----
+      -- clangd
+      vim.lsp.config("clangd", {
+        cmd = {
+          "clangd",
+          "--background-index",
+          "--clang-tidy",
+          "--header-insertion=iwyu",
+          "--completion-style=detailed",
+          "--function-arg-placeholders",
+          "--fallback-style=llvm",
         },
+        init_options = {
+          usePlaceholders = true,
+          completeUnimported = true,
+          clangdFileStatus = true,
+        },
+        capabilities = clangd_caps,
+        root_dir = root_dir_from,
+        -- evt. on_attach for nøkkelbindinger:
+        on_attach = function(client, bufnr)
+          vim.keymap.set("n", "<leader>ch", function()
+            -- clangd off-spec method (switch source/header)
+            client.request(
+              "clangd.switchSourceHeader",
+              { uri = vim.uri_from_bufnr(bufnr) },
+              function(err, res)
+                if not err and res then
+                  vim.cmd.edit(vim.uri_to_fname(res))
+                end
+              end,
+              bufnr
+            )
+          end, { buffer = bufnr, desc = "Switch Source/Header (C/C++)" })
+        end,
       })
 
-      -- Eksempel: Lua
-      lspconfig.lua_ls.setup({
-        capabilities = capabilities,
+      -- TypeScript (nytt navn)
+      vim.lsp.config("ts_ls", {
+        capabilities = caps,
         settings = {},
       })
 
-      -- Python LSP (pyright)
-      lspconfig.pyright.setup({
-        capabilities = capabilities,
-      })
+      -- Lua
+      vim.lsp.config("lua_ls", { capabilities = caps })
 
-      -- C LSP (clangd)
-      lspconfig.clangd.setup({
-        capabilities = capabilities,
-      })
+      -- Python
+      vim.lsp.config("pyright", { capabilities = caps })
 
-      -- TOML LSP (taplo)
-      lspconfig.taplo.setup({
-        capabilities = capabilities,
-      })
+      -- TOML
+      vim.lsp.config("taplo", { capabilities = caps })
 
-      -- JSON LSP (jsonls), kan brukes for konfigurasjonsfiler som .json
-      lspconfig.jsonls.setup({
-        capabilities = capabilities,
-      })
+      -- JSON
+      vim.lsp.config("jsonls", { capabilities = caps })
 
-      -- YAML LSP (yaml)
-      lspconfig.yamlls.setup({
-        capabilities = capabilities,
-      })
+      -- YAML
+      vim.lsp.config("yamlls", { capabilities = caps })
 
-      lspconfig.html.setup({
-        capabilities = capabilities,
-      })
+      -- HTML / CSS
+      vim.lsp.config("html", { capabilities = caps })
+      vim.lsp.config("cssls", { capabilities = caps })
 
-      lspconfig.cssls.setup({
-        capabilities = capabilities,
+      -- ---- Slå på konfigene ----
+      vim.lsp.enable({
+        "clangd",
+        "ts_ls",
+        "lua_ls",
+        "pyright",
+        "taplo",
+        "jsonls",
+        "yamlls",
+        "html",
+        "cssls",
       })
     end,
   },
+  -- Selve LSP-oppsettet
+  -- {
+  -- 	"neovim/nvim-lspconfig",
+  -- 	lazy = false,
+  -- 	opts = {
+  -- 		servers = {
+  -- 			-- Ensure mason installs the server
+  -- 			clangd = {
+  -- 				keys = {
+  -- 					{ "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
+  -- 				},
+  -- 				root_markers = {
+  -- 					"compile_commands.json",
+  -- 					"compile_flags.txt",
+  -- 					"configure.ac", -- AutoTools
+  -- 					"Makefile",
+  -- 					"configure.ac",
+  -- 					"configure.in",
+  -- 					"config.h.in",
+  -- 					"meson.build",
+  -- 					"meson_options.txt",
+  -- 					"build.ninja",
+  -- 					".git",
+  -- 				},
+  -- 				capabilities = {
+  -- 					offsetEncoding = { "utf-16" },
+  -- 				},
+  -- 				cmd = {
+  -- 					"clangd",
+  -- 					"--background-index",
+  -- 					"--clang-tidy",
+  -- 					"--header-insertion=iwyu",
+  -- 					"--completion-style=detailed",
+  -- 					"--function-arg-placeholders",
+  -- 					"--fallback-style=llvm",
+  -- 				},
+  -- 				init_options = {
+  -- 					usePlaceholders = true,
+  -- 					completeUnimported = true,
+  -- 					clangdFileStatus = true,
+  -- 				},
+  -- 			},
+  -- 		},
+  -- 		setup = {
+  -- 			clangd = function(_, opts)
+  -- 				local clangd_ext_opts = LazyVim.opts("clangd_extensions.nvim")
+  -- 				require("clangd_extensions").setup(
+  -- 					vim.tbl_deep_extend("force", clangd_ext_opts or {}, { server = opts })
+  -- 				)
+  -- 				return false
+  -- 			end,
+  -- 		},
+  -- 	},
+  -- 	config = function()
+  -- 		local lspconfig = vim.lsp.config()
+  -- 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
+  --
+  -- 		-- Bruker ts_ls i stedet for tsserver
+  -- 		lspconfig.ts_ls.setup({
+  -- 			capabilities = capabilities,
+  -- 			on_attach = function(client, bufnr)
+  -- 				-- tilpasset kode for ts_ls-serveren
+  -- 			end,
+  -- 			settings = {
+  -- 				-- spesifikke innstillinger for ts_ls (TypeScript)
+  -- 			},
+  -- 		})
+  --
+  -- 		-- Eksempel: Lua
+  -- 		lspconfig.lua_ls.setup({
+  -- 			capabilities = capabilities,
+  -- 			settings = {},
+  -- 		})
+  --
+  -- 		-- Python LSP (pyright)
+  -- 		lspconfig.pyright.setup({
+  -- 			capabilities = capabilities,
+  -- 		})
+  --
+  -- 		-- C LSP (clangd)
+  -- 		lspconfig.clangd.setup({
+  -- 			capabilities = capabilities,
+  -- 		})
+  --
+  -- 		-- TOML LSP (taplo)
+  -- 		lspconfig.taplo.setup({
+  -- 			capabilities = capabilities,
+  -- 		})
+  --
+  -- 		-- JSON LSP (jsonls), kan brukes for konfigurasjonsfiler som .json
+  -- 		lspconfig.jsonls.setup({
+  -- 			capabilities = capabilities,
+  -- 		})
+  --
+  -- 		-- YAML LSP (yaml)
+  -- 		lspconfig.yamlls.setup({
+  -- 			capabilities = capabilities,
+  -- 		})
+  --
+  -- 		lspconfig.html.setup({
+  -- 			capabilities = capabilities,
+  -- 		})
+  --
+  -- 		lspconfig.cssls.setup({
+  -- 			capabilities = capabilities,
+  -- 		})
+  -- 	end,
+  -- },
 
   {
     "lukas-reineke/indent-blankline.nvim",
