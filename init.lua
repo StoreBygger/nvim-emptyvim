@@ -21,7 +21,7 @@ vim.g.loaded_netrw = 1 -- disable netrw at start of init.lua
 vim.g.loaded_netrwPlugins = 1
 
 require("config.lazy")
-vim.cmd.colorscheme("onedark")
+-- vim.cmd.colorscheme("onedark")
 
 -- config zathura to nvim
 vim.g.vimtex_view_method = "zathura"
@@ -89,3 +89,13 @@ vim.cmd([[
 -- trouble - debug
 vim.keymap.set("n", "<leader>Tm", ":Trouble<CR>", { desc = " Trouble Meny" })
 vim.keymap.set("n", "<leader>Td", ":Trouble diagnostics<CR>", { desc = "Trouble Diagnostics" })
+
+-- legge til runner scripot
+require("custom.runner").setup()
+
+vim.api.nvim_create_user_command("FixSnippets", function()
+  vim.cmd("LspRestart")
+  require("luasnip").cleanup()
+  require("luasnip.loaders.from_lua").lazy_load()
+  require("cmp").setup({})
+end, {})

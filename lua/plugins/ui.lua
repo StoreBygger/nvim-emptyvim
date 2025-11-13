@@ -6,7 +6,24 @@ return {
 		priority = 1000,
 		config = function() end,
 	},
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			require("catppuccin").setup({
+				flavour = "mocha", -- fast i stedet for "auto"
+				transparent_background = true,
+				float = {
+					transparent = true,
+					solid = false,
+				},
+			})
 
+			vim.cmd.colorscheme("catppuccin-mocha")
+		end,
+	},
 	{
 		"folke/tokyonight.nvim",
 		lazy = false,
@@ -106,47 +123,14 @@ return {
 		lazy = false,
 		dependencies = "nvim-tree/nvim-web-devicons",
 		config = function()
-			require("bufferline").setup({
-				options = {
-					indicator = {
-						icon = " ",
-						style = "icon",
-					},
-					buffer_close_icon = "󰅖",
-					modified_icon = "● ",
-					close_icon = " ",
-					left_trunc_marker = " ",
-					right_trunc_marker = " ",
-					diagnostics = "nvim_lsp",
-					diagnostics_indicator = function(count, level, diagnostics_dict, context)
-						local icon = level:match("error") and " " or " "
-						return " " .. icon .. count
-					end,
-					color_icons = true,
-					show_buffer_icons = true,
-					show_close_icon = true,
-					hover = {
-						enabled = true,
-						delay = 200,
-						reveal = { "close" },
-					},
-					separator_style = "slope",
-					themable = true,
-					offsets = {
-						{
-							filetype = "NvimTree",
-							text = "File Explorer",
-							highlight = "Directory",
-							separator = true,
-						},
-					},
-					groups = {
-						items = {
-							require("bufferline.groups").builtin.pinned:with({ icon = "" }),
-							require("bufferline.groups").builtin.ungrouped,
-						},
-					},
-				},
+			local bufferline_setup = require("custom.bufferlinesetup")
+
+			bufferline_setup.apply()
+
+			vim.api.nvim_create_autocmd("colorscheme", {
+				callback = function()
+					bufferline_setup.apply()
+				end,
 			})
 		end,
 	},
@@ -200,7 +184,6 @@ return {
 		"stevearc/dressing.nvim",
 		opts = {},
 	},
-
 	{
 		"Shatur/neovim-session-manager",
 		dependencies = { "nvim-lua/plenary.nvim" },
@@ -240,6 +223,90 @@ return {
 				open_mapping = [[<C-\>]],
 				start_in_insert = true,
 				shade_terminals = true,
+			})
+		end,
+	},
+	{
+		"lmantw/themify.nvim",
+
+		lazy = false,
+		priority = 999,
+
+		config = function()
+			require("themify").setup({
+				async = false,
+				-- Enabling this would load the colorscheme asynchronously, which might improve your startup time.
+
+				activity = false,
+				-- Enabling this would track your colorscheme usage activity.
+
+				{
+					"folke/tokyonight.nvim",
+
+					branch = "main",
+
+					before = function(theme)
+						-- The function run before the colorscheme is loaded.
+						require("tokyonight").setup({
+							transparent = true,
+						})
+					end,
+					after = function(theme)
+						-- The function run after the colorscheme is loaded.
+					end,
+
+					-- A colorscheme can have multiple themes, you can use the options below to only show the themes you want.
+					-- whitelist = {},
+					blacklist = {},
+				},
+
+				{
+					"rebelot/kanagawa.nvim",
+
+					before = function(theme)
+						require("kanagawa").setup({
+							transparent = true,
+						})
+					end,
+				},
+
+				{
+					"bluz71/vim-moonfly-colors",
+				},
+
+				{
+					"navarasu/onedark.nvim",
+					style = "warm",
+
+					before = function(theme)
+						require("onedark").setup({
+							style = "deep",
+							transparent = true,
+							term_colors = true,
+							ending_tiles = true,
+						})
+					end,
+				},
+				{
+					"catppuccin/nvim",
+					name = "catppuccin",
+					before = function(theme)
+						require("catppuccin").setup({
+							flavour = "auto",
+							transparent_background = true,
+							float = {
+								transparent = true,
+								solid = false,
+							},
+						})
+					end,
+				},
+
+				-- The loader loads the colorscheme on startup, you can use the option below to replace it with a custom one.
+				loader = function()
+					-- og så faktisk last temaet
+					vim.cmd.colorscheme("catppuccin-mocha") -- Custom loader logic...
+				end,
 			})
 		end,
 	},

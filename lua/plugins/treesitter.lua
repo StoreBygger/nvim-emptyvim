@@ -25,6 +25,7 @@ return {
 				modules = {},
 				highlight = {
 					enable = true,
+					additional_vim_regex_highlighting = { "tex" },
 				},
 				indent = {
 					enable = true,
@@ -346,7 +347,21 @@ return {
 			})
 
 			-- Lua
-			vim.lsp.config("lua_ls", { capabilities = caps })
+			vim.lsp.config("lua_ls", {
+				capabilities = caps,
+				settings = {
+					Lua = {
+						diagnostics = {
+							globals = { "vim" }, -- <- fikser Undefined global 'vim'
+						},
+						workspace = {
+							library = vim.api.nvim_get_runtime_file("", true),
+							checkThirdParty = false,
+						},
+						telemetry = { enable = false },
+					},
+				},
+			})
 
 			-- Python
 			vim.lsp.config("pyright", { capabilities = caps })
@@ -364,6 +379,18 @@ return {
 			vim.lsp.config("html", { capabilities = caps })
 			vim.lsp.config("cssls", { capabilities = caps })
 
+			-- LTeX (stave- og grammatikkontroll for LaTeX, Markdown, osv.)
+			vim.lsp.config("ltex", {
+				capabilities = caps,
+				filetypes = { "tex", "bib", "markdown" },
+				settings = {
+					ltex = {
+						language = "nb-NO", -- evt. "en-US" / "en-GB"
+						additionalRules = { motherTongue = "nb-NO" },
+						disabledRules = { ["nb-NO"] = { "MORFOLOGIK_RULE_NO" } },
+					},
+				},
+			})
 			-- ---- Slå på konfigene ----
 			vim.lsp.enable({
 				"clangd",
@@ -375,117 +402,10 @@ return {
 				"yamlls",
 				"html",
 				"cssls",
+				"itex",
 			})
 		end,
 	},
-	-- Selve LSP-oppsettet
-	-- {
-	-- 	"neovim/nvim-lspconfig",
-	-- 	lazy = false,
-	-- 	opts = {
-	-- 		servers = {
-	-- 			-- Ensure mason installs the server
-	-- 			clangd = {
-	-- 				keys = {
-	-- 					{ "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
-	-- 				},
-	-- 				root_markers = {
-	-- 					"compile_commands.json",
-	-- 					"compile_flags.txt",
-	-- 					"configure.ac", -- AutoTools
-	-- 					"Makefile",
-	-- 					"configure.ac",
-	-- 					"configure.in",
-	-- 					"config.h.in",
-	-- 					"meson.build",
-	-- 					"meson_options.txt",
-	-- 					"build.ninja",
-	-- 					".git",
-	-- 				},
-	-- 				capabilities = {
-	-- 					offsetEncoding = { "utf-16" },
-	-- 				},
-	-- 				cmd = {
-	-- 					"clangd",
-	-- 					"--background-index",
-	-- 					"--clang-tidy",
-	-- 					"--header-insertion=iwyu",
-	-- 					"--completion-style=detailed",
-	-- 					"--function-arg-placeholders",
-	-- 					"--fallback-style=llvm",
-	-- 				},
-	-- 				init_options = {
-	-- 					usePlaceholders = true,
-	-- 					completeUnimported = true,
-	-- 					clangdFileStatus = true,
-	-- 				},
-	-- 			},
-	-- 		},
-	-- 		setup = {
-	-- 			clangd = function(_, opts)
-	-- 				local clangd_ext_opts = LazyVim.opts("clangd_extensions.nvim")
-	-- 				require("clangd_extensions").setup(
-	-- 					vim.tbl_deep_extend("force", clangd_ext_opts or {}, { server = opts })
-	-- 				)
-	-- 				return false
-	-- 			end,
-	-- 		},
-	-- 	},
-	-- 	config = function()
-	-- 		local lspconfig = vim.lsp.config()
-	-- 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
-	--
-	-- 		-- Bruker ts_ls i stedet for tsserver
-	-- 		lspconfig.ts_ls.setup({
-	-- 			capabilities = capabilities,
-	-- 			on_attach = function(client, bufnr)
-	-- 				-- tilpasset kode for ts_ls-serveren
-	-- 			end,
-	-- 			settings = {
-	-- 				-- spesifikke innstillinger for ts_ls (TypeScript)
-	-- 			},
-	-- 		})
-	--
-	-- 		-- Eksempel: Lua
-	-- 		lspconfig.lua_ls.setup({
-	-- 			capabilities = capabilities,
-	-- 			settings = {},
-	-- 		})
-	--
-	-- 		-- Python LSP (pyright)
-	-- 		lspconfig.pyright.setup({
-	-- 			capabilities = capabilities,
-	-- 		})
-	--
-	-- 		-- C LSP (clangd)
-	-- 		lspconfig.clangd.setup({
-	-- 			capabilities = capabilities,
-	-- 		})
-	--
-	-- 		-- TOML LSP (taplo)
-	-- 		lspconfig.taplo.setup({
-	-- 			capabilities = capabilities,
-	-- 		})
-	--
-	-- 		-- JSON LSP (jsonls), kan brukes for konfigurasjonsfiler som .json
-	-- 		lspconfig.jsonls.setup({
-	-- 			capabilities = capabilities,
-	-- 		})
-	--
-	-- 		-- YAML LSP (yaml)
-	-- 		lspconfig.yamlls.setup({
-	-- 			capabilities = capabilities,
-	-- 		})
-	--
-	-- 		lspconfig.html.setup({
-	-- 			capabilities = capabilities,
-	-- 		})
-	--
-	-- 		lspconfig.cssls.setup({
-	-- 			capabilities = capabilities,
-	-- 		})
-	-- 	end,
-	-- },
 
 	{
 		"lukas-reineke/indent-blankline.nvim",

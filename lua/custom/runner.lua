@@ -106,8 +106,11 @@ local function c_make(mode, root)
 end
 
 local function c_no_make(mode, root)
+	local file = vim.fn.expand("%:p")
 	local out = vim.fn.expand("%:p:r")
 	local args = get_args(mode, "c")
+
+	print(("Kjører c_no_make med fil %s, out: %s"):format(file, out))
 
 	if mode == "compile" then
 		return ("%s %s -o %s %s").format(cfg.c.cc, file, out, cfg.c.cflags)
@@ -166,15 +169,10 @@ function M.run(mode)
 		return
 	end
 
-	term_run()
+	term_run(cmd)
 end
 
 function M.setup()
-	-- smart run
-	vim.keymap.set("n", "<F5>", function()
-		M.run("run")
-	end, { desc = "Run (SMART)" })
-
 	-- Presise variabler
 
 	vim.keymap.set("n", "<F5>r", function()
