@@ -1,6 +1,6 @@
 vim.opt.clipboard = "unnamedplus" -- use system keyboard for yank
-vim.opt.nu = true                 -- set line numbers -- line numbers
-vim.opt.relativenumber = true     -- use relative line numbers
+vim.opt.nu = true -- set line numbers -- line numbers
+vim.opt.relativenumber = true -- use relative line numbers
 -- set tab size to 2 spaces
 vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
@@ -28,9 +28,9 @@ vim.g.vimtex_view_method = "zathura"
 vim.g.vimtex_compiler_method = "latexmk"
 vim.g.vimtex_compiler_progname = "nvr"
 vim.g.vimtex_compiler_latexmk = {
-  continuous = 1,
-  callback = 1,
-  options = { "-pdf", "-interaction=nonstopmode", "-synctex=1" },
+	continuous = 1,
+	callback = 1,
+	options = { "-pdf", "-interaction=nonstopmode", "-synctex=1" },
 }
 
 --Telescope keymaps
@@ -47,8 +47,12 @@ vim.keymap.set("n", "<leader>tr", ":NvimTreeRefresh<CR>", { desc = " refresh Nvi
 vim.keymap.set({ "n", "v" }, "<leader>n", ":nohlsearch<CR>", { desc = " remove search patterns" })
 
 --BufferLine keymaps
-vim.keymap.set("n", "<C-h>", ":BufferLineCyclePrev<CR>", { desc = " move to previous bufferline" })
-vim.keymap.set("n", "<C-l>", ":BufferLineCycleNext<CR>", { desc = " move to next bufferline" })
+vim.keymap.set("n", "<C-h>", function()
+	require("bufferline").cycle(-1)
+end, { desc = " move to previous bufferline" })
+vim.keymap.set("n", "<C-l>", function()
+	require("bufferline").cycle(1)
+end, { desc = " move to next bufferline" })
 vim.keymap.set("n", "<leader>bp", ":BufferLineTogglePin<CR>", { desc = " toggle bufferline pin" })
 vim.keymap.set("n", "<leader>bl", ":BufferLineMoveNext<CR>", { desc = " Move tab left" })
 vim.keymap.set("n", "<leader>bh", ":BufferLineMovePrev<CR>", { desc = " Move tab right" })
@@ -75,10 +79,10 @@ vim.keymap.set("n", "<leader>sll", ":SessionManager load_last_session<CR>", { de
 vim.keymap.set("n", "<leader>sls", ":SessionManager load_session<CR>", { desc = "Session Load Session" })
 vim.keymap.set("n", "<leader>slg", ":SessionManager load_git_session<CR>", { desc = "Session Load Git Session" })
 vim.keymap.set(
-  "n",
-  "<leader>slc",
-  ":SessionManager load_current_dir_session<CR>",
-  { desc = "Session Load CWD Session" }
+	"n",
+	"<leader>slc",
+	":SessionManager load_current_dir_session<CR>",
+	{ desc = "Session Load CWD Session" }
 )
 vim.keymap.set("n", "<leader>sd", ":SessionManager delete_session<CR>", { desc = "Session Delete" })
 
@@ -94,8 +98,25 @@ vim.keymap.set("n", "<leader>Td", ":Trouble diagnostics<CR>", { desc = "Trouble 
 require("custom.runner").setup()
 
 vim.api.nvim_create_user_command("FixSnippets", function()
-  vim.cmd("LspRestart")
-  require("luasnip").cleanup()
-  require("luasnip.loaders.from_lua").lazy_load()
-  require("cmp").setup({})
+	-- restart LSP (vanligste fixen)
+	vim.cmd("LspRestart")
+
+	-- restart LuaSnip
+	local ok_ls, luasnip = pcall(require, "luasnip")
+	if ok_ls then
+		luasnip.cleanup()
+		pcall(function()
+			require("luasnip.loaders.from_lua").lazy_load()
+			require("luasnip.loaders.from_vscode").lazy_load()
+			require("luasnip.loaders.from_snipmate").lazy_load()
+		end)
+	end
+
+	-- restart completion (cmp)
+	local ok_cmp, cmp = pcall(require, "cmp")
+	if ok_cmp then
+		cmp.setup({})
+	end
+
+	print("🔁 Snippets reloaded!")
 end, {})

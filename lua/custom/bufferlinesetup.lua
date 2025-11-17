@@ -138,9 +138,10 @@ M.apply = function()
 			},
 		},
 	})
-  vim.api.nvim_set_hl(0, "BufferLineFill", { bg = "#2b2b2b", fg = "#2b2b2b" })
-  vim.api.nvim_set_hl(0, "TabLineFill",    { bg = "#2b2b2b", fg = "#2b2b2b" })
-  vim.api.nvim_set_hl(0, "TabLine",        { bg = "#2b2b2b", fg = "#c7c7c7" })
+	vim.api.nvim_set_hl(0, "BufferLineFill", { bg = "#4b4b4b", fg = "#4b4b4b" })
+	vim.api.nvim_set_hl(0, "TabLineFill", { bg = "#2b2b2b", fg = "#2b2b2b" })
+	vim.api.nvim_set_hl(0, "TabLine", { bg = "#2b2b2b", fg = "#c7c7c7" })
+  -- vim.api.nvim_set_hl(0, "BufferLineBackground", {bg = "#2b2b2b", fg="#2b2b2b"})
 end
 
 return M
