@@ -17,11 +17,11 @@ return {
           require("none-ls.diagnostics.flake8"),
 
           -- === Formatters ===
-          null_ls.builtins.formatting.prettier, -- JS, TS, HTML, CSS, etc.
-          null_ls.builtins.formatting.stylua,  -- Lua
-          null_ls.builtins.formatting.black,   -- Python
-          null_ls.builtins.formatting.shfmt,   -- Shell
-          null_ls.builtins.formatting.clang_format, -- C/C++
+          null_ls.builtins.formatting.prettier,
+          null_ls.builtins.formatting.stylua,
+          null_ls.builtins.formatting.black,
+          null_ls.builtins.formatting.shfmt,
+          null_ls.builtins.formatting.clang_format,
 
           -- === Hover (valgfritt) ===
           null_ls.builtins.hover.printenv, -- Miljøvariabler

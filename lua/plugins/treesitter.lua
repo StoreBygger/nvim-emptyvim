@@ -402,7 +402,7 @@ return {
 				"yamlls",
 				"html",
 				"cssls",
-				"itex",
+				"ltex",
 			})
 		end,
 	},

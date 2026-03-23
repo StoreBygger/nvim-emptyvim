@@ -56,4 +56,9 @@ return {
       require("telescope").load_extension("noice")
     end,
   },
+  {
+    "ray-x/lsp_signature.nvim",
+    event = "VeryLazy",
+    opts = {},
+  },
 }

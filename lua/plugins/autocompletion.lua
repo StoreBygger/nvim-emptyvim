@@ -16,13 +16,13 @@ return {
 			opts.sorting.comparators = opts.sorting.comparators or {}
 			table.insert(opts.sorting.comparators, 1, require("clangd_extensions.cmp_scores"))
 		end,
-		config = function()
+		config = function(_, opts)
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 			require("luasnip.loaders.from_vscode").lazy_load()
 			require("luasnip").filetype_extend("tex", { "latex" })
 
-			cmp.setup({
+			cmp.setup(vim.tbl_deep_extend("force", opts or {}, {
 				snippet = {
 					expand = function(args)
 						require("luasnip").lsp_expand(args.body)
@@ -48,7 +48,7 @@ return {
 				}, {
 					{ name = "buffer" },
 				}),
-			})
+			}))
 			cmp.setup.filetype("gitcommit", {
 				sources = cmp.config.sources({
 					{ name = "git" },
@@ -96,7 +96,8 @@ return {
 	{
 		"L3MON4D3/LuaSnip",
 		version = "v2.*",
-		run = "make_install_jsregexp",
+		dependencies = { "rafamadriz/friendly-snippets" },
+		build = "make install_jsregexp",
 	},
 
 	{
