@@ -1,2 +1,3 @@
 sessions/*
 lazy-lock.json
+lua/plugins/latex_typst.lua
